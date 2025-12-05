@@ -1,8 +1,9 @@
 import google.generativeai as genai
 import pandas as pd
+import os
 
-# Configure Gemini API key
-genai.configure(api_key="AIzaSyBeHqBT3D1ExVpnBGPJgIauHz8h2M9ly3g")
+# Configure Gemini API key from environment variable
+genai.configure(api_key=os.getenv("API_KEY"))
 
 def ask_gemini(prompt):
     model = genai.GenerativeModel('models/gemini-2.5-pro')
@@ -18,23 +19,13 @@ climate_data = {
 df = pd.DataFrame(climate_data)
 
 def climate_chatbot(user_query):
-    context = f"""You are a climate science expert. Use the following data to answer the question simply and clearly:
+    context = f"""
+    You are a climate science expert. Use the following data to answer the question simply and clearly:
 
-{df.to_string(index=False)}
+    {df.to_string(index=False)}
 
-Question: {user_query}
+    Question: {user_query}
 
-Answer:"""
+    Answer:
+    """
     return ask_gemini(context)
-
-def main():
-    print("Welcome to Climate Action Chatbot! Type 'exit' to quit.")
-    while True:
-        query = input("Ask a climate question: ")
-        if query.lower() == 'exit':
-            break
-        response = climate_chatbot(query)
-        print("\nResponse:\n", response, "\n")
-
-if __name__ == "__main__":
-    main()
